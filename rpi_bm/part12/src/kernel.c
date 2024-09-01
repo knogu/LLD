@@ -52,8 +52,8 @@ void kernel_main() {
     //     }
     // }
 
-    // printf("Initializing SPI...\n");
-    // spi_init();
+    printf("Initializing SPI...\n");
+    spi_init();
 
     // printf("Initializing Display...\n");
     // led_display_init();

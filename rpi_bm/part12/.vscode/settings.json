@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "led_display.h": "c"
+        "led_display.h": "c",
+        "utils.h": "c",
+        "gpio.h": "c",
+        "spi.h": "c"
     }
 }

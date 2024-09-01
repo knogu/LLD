@@ -56,10 +56,57 @@ void spi_send_recv(u8 chip_select, u8 *sbuffer, u8 *rbuffer, u32 size) {
     REGS_SPI0->cs = (REGS_SPI0->cs & ~CS_TA);
 }
 
+void _spi_send_recv(unsigned char *sbuffer, unsigned char *rbuffer, unsigned int size) {
+    REGS_SPI0->data_length = size;
+    REGS_SPI0->cs = REGS_SPI0->cs | CS_CLEAR_RX | CS_CLEAR_TX | CS_TA;
+    
+    unsigned int read_count = 0;
+    unsigned int write_count = 0;
+
+    while(read_count < size || write_count < size) {
+        while(write_count < size && REGS_SPI0->cs & CS_TXD) {
+            if (sbuffer) {
+                REGS_SPI0->fifo = *sbuffer++;
+            } else {
+                REGS_SPI0->fifo = 0;
+            }
+
+            write_count++;
+        }
+
+        while(read_count < size && REGS_SPI0->cs & CS_RXD) {
+            unsigned int data = REGS_SPI0->fifo;
+
+            if (rbuffer) {
+                *rbuffer++ = data;
+            }
+
+            read_count++;
+        }
+    }
+
+    while(!(REGS_SPI0->cs & CS_DONE)) {
+        while(REGS_SPI0->cs & CS_RXD) {
+            unsigned int r = REGS_SPI0->fifo;
+	    debughex(r);
+        }
+    }
+
+    REGS_SPI0->cs = (REGS_SPI0->cs & ~CS_TA);
+}
+
 void spi_send(u8 chip_select, u8 *data, u32 size) {
+    spi_send_recv(chip_select, data, 0, size);
+}
+
+void _spi_send(u8 chip_select, u8 *data, u32 size) {
     spi_send_recv(chip_select, data, 0, size);
 }
 
 void spi_recv(u8 chip_select, u8 *data, u32 size) {
     spi_send_recv(chip_select, 0, data, size);
+}
+
+void spi_chip_select(unsigned char chip_select) {
+    gpio_setPinOutputBool(8, chip_select);
 }
