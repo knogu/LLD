@@ -38,63 +38,64 @@ void kernel_main() {
 
     printf("\nException Level: %d\n", get_el());
 
-    printf("Sleeping 200 ms...\n");
+    printf("Sleeping 2000 ms...\n");
     timer_sleep(200);
+    printf("Hi\n");
 
-    printf("Initializing I2C...\n");
-    i2c_init();
+    // printf("Initializing I2C...\n");
+    // i2c_init();
 
-    for (u8 i=0x20; i<0x30; i++) {
-        if (i2c_send(i, &i, 1) == I2CS_SUCCESS) {
-            //we know there is an i2c device here now.
-            printf("Found device at address 0x%X\n", i);
-        }
-    }
+    // for (u8 i=0x20; i<0x30; i++) {
+    //     if (i2c_send(i, &i, 1) == I2CS_SUCCESS) {
+    //         //we know there is an i2c device here now.
+    //         printf("Found device at address 0x%X\n", i);
+    //     }
+    // }
 
-    printf("Initializing SPI...\n");
-    spi_init();
+    // printf("Initializing SPI...\n");
+    // spi_init();
 
-    printf("Initializing Display...\n");
-    led_display_init();
-    timer_sleep(2000);
+    // printf("Initializing Display...\n");
+    // led_display_init();
+    // timer_sleep(2000);
 
-    led_display_clear();
+    // led_display_clear();
 
-    printf("Cleared\n");
+    // printf("Cleared\n");
     
-    for (int i=0; i<=9; i++) {
-        for (int d=0; d<8; d++) {
-            led_display_set_digit(d, i, false);
-            timer_sleep(200);
-        }
-    }
+    // for (int i=0; i<=9; i++) {
+    //     for (int d=0; d<8; d++) {
+    //         led_display_set_digit(d, i, false);
+    //         timer_sleep(200);
+    //     }
+    // }
 
-    printf("Intensifying...\n");
+    // printf("Intensifying...\n");
 
-    for (int i=0; i<16; i++) {
-        printf("Intensity: %d\n", i);
-        led_display_intensity(i);
-        timer_sleep(200);
-    }
+    // for (int i=0; i<16; i++) {
+    //     printf("Intensity: %d\n", i);
+    //     led_display_intensity(i);
+    //     timer_sleep(200);
+    // }
 
-    led_display_clear();
-    timer_sleep(2000);
+    // led_display_clear();
+    // timer_sleep(2000);
 
-    //HELLO
-    led_display_send_command(LD_DIGIT4, 0b00110111);
-    led_display_send_command(LD_DIGIT3, 0b01001111);
-    led_display_send_command(LD_DIGIT2, 0b00001110);
-    led_display_send_command(LD_DIGIT1, 0b00001110);
-    led_display_send_command(LD_DIGIT0, 0b01111110);
+    // //HELLO
+    // led_display_send_command(LD_DIGIT4, 0b00110111);
+    // led_display_send_command(LD_DIGIT3, 0b01001111);
+    // led_display_send_command(LD_DIGIT2, 0b00001110);
+    // led_display_send_command(LD_DIGIT1, 0b00001110);
+    // led_display_send_command(LD_DIGIT0, 0b01111110);
 
 
-    printf("Shutting down...\n");
-    timer_sleep(2000);
-    led_display_send_command(LD_SHUTDOWN, 0);
+    // printf("Shutting down...\n");
+    // timer_sleep(2000);
+    // led_display_send_command(LD_SHUTDOWN, 0);
 
     printf("DONE!\n");
 
     while(1) {
-        //uart_send(uart_recv());
+        uart_send(uart_recv());
     }
 }
