@@ -6,6 +6,56 @@
 #include "i2c.h"
 #include "spi.h"
 #include "led_display.h"
+#include "enc28j60.h"
+#include "ip_arp_udp_tcp.h"
+
+// NETWORKING GLOBALS AND FUNCTIONS
+
+ENC_HandleTypeDef handle;
+
+// MAC address to be assigned to the ENC28J60
+unsigned char myMAC[6] = { 0xc0, 0xff, 0xee, 0xc0, 0xff, 0xee };
+
+// IP address to be assigned to the ENC28J60
+unsigned char deviceIP[4] = { 192, 168, 0, 66 };
+
+void init_network(void)
+{
+   handle.Init.DuplexMode = ETH_MODE_HALFDUPLEX;
+   handle.Init.MACAddr = myMAC;
+   handle.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
+   handle.Init.InterruptEnableBits = EIE_LINKIE | EIE_PKTIE;
+
+   printf("Starting network up.");
+   if (!ENC_Start(&handle)) {
+      printf("Could not initialise network card.");
+   } else {
+      printf("Setting MAC address to C0:FF:EE:C0:FF:EE.");
+
+      ENC_SetMacAddr(&handle);
+
+      printf("Network card successfully initialised.");
+   }
+
+   printf("Waiting for ifup... ");
+   while (!(handle.LinkStatus & PHSTAT2_LSTAT)) ENC_IRQHandler(&handle);
+   printf("done.");
+
+   // Re-enable global interrupts
+   ENC_EnableInterrupts(EIE_INTIE);
+
+   printf("Initialising the TCP stack... ");
+   init_udp_or_www_server(myMAC, deviceIP);
+   printf("done.");
+}
+
+void enc28j60PacketSend(unsigned short buflen, void *buffer) {
+   if (ENC_RestoreTXBuffer(&handle, buflen) == 0) {
+      ENC_WriteBuffer((unsigned char *) buffer, buflen);
+      handle.transmitLength = buflen;
+      ENC_Transmit(&handle);
+   }
+}
 
 void putc(void *p, char c) {
     if (c == '\n') {
@@ -39,8 +89,10 @@ void kernel_main() {
     printf("\nException Level: %d\n", get_el());
 
     printf("Sleeping 2000 ms...\n");
-    timer_sleep(200);
+    timer_sleep(2000);
     printf("Hi\n");
+
+    
 
     // printf("Initializing I2C...\n");
     // i2c_init();
@@ -54,6 +106,8 @@ void kernel_main() {
 
     printf("Initializing SPI...\n");
     spi_init();
+
+    init_network();
 
     // printf("Initializing Display...\n");
     // led_display_init();

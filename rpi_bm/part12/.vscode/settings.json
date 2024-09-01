@@ -3,6 +3,7 @@
         "led_display.h": "c",
         "utils.h": "c",
         "gpio.h": "c",
-        "spi.h": "c"
+        "spi.h": "c",
+        "enc28j60.h": "c"
     }
 }
