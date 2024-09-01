@@ -158,6 +158,8 @@ void kernel_main() {
 
     init_network();
 
+    serve();
+
     // printf("Initializing Display...\n");
     // led_display_init();
     // timer_sleep(2000);

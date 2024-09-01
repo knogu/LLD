@@ -6,16 +6,16 @@ void ENC_SPI_Select(unsigned char truefalse) {
 
 void ENC_SPI_SendBuf(unsigned char *master2slave, unsigned char *slave2master, unsigned short bufferSize) {
     spi_chip_select(0);
-    spi_send_recv_(master2slave, slave2master, bufferSize);
+    spi_send_recv(0, master2slave, slave2master, bufferSize);
     spi_chip_select(1); // De-select the ENC
 }
 
 void ENC_SPI_Send(unsigned char command) {
     spi_chip_select(0);
-    spi_send_(&command, 1);
+    spi_send(0, &command, 1);
     spi_chip_select(1); // De-select the ENC
 }
 
 void ENC_SPI_SendWithoutSelection(unsigned char command) {
-    spi_send_(&command, 1);
+    spi_send(0, &command, 1);
 }

@@ -56,52 +56,52 @@ void spi_send_recv(u8 chip_select, u8 *sbuffer, u8 *rbuffer, u32 size) {
     REGS_SPI0->cs = (REGS_SPI0->cs & ~CS_TA);
 }
 
-void spi_send_recv_(unsigned char *sbuffer, unsigned char *rbuffer, unsigned int size) {
-    REGS_SPI0->data_length = size;
-    REGS_SPI0->cs = REGS_SPI0->cs | CS_CLEAR_RX | CS_CLEAR_TX | CS_TA;
+// void spi_send_recv_(unsigned char *sbuffer, unsigned char *rbuffer, unsigned int size) {
+//     REGS_SPI0->data_length = size;
+//     REGS_SPI0->cs = REGS_SPI0->cs | CS_CLEAR_RX | CS_CLEAR_TX | CS_TA;
     
-    unsigned int read_count = 0;
-    unsigned int write_count = 0;
+//     unsigned int read_count = 0;
+//     unsigned int write_count = 0;
 
-    while(read_count < size || write_count < size) {
-        while(write_count < size && REGS_SPI0->cs & CS_TXD) {
-            if (sbuffer) {
-                REGS_SPI0->fifo = *sbuffer++;
-            } else {
-                REGS_SPI0->fifo = 0;
-            }
+//     while(read_count < size || write_count < size) {
+//         while(write_count < size && REGS_SPI0->cs & CS_TXD) {
+//             if (sbuffer) {
+//                 REGS_SPI0->fifo = *sbuffer++;
+//             } else {
+//                 REGS_SPI0->fifo = 0;
+//             }
 
-            write_count++;
-        }
+//             write_count++;
+//         }
 
-        while(read_count < size && REGS_SPI0->cs & CS_RXD) {
-            unsigned int data = REGS_SPI0->fifo;
+//         while(read_count < size && REGS_SPI0->cs & CS_RXD) {
+//             unsigned int data = REGS_SPI0->fifo;
 
-            if (rbuffer) {
-                *rbuffer++ = data;
-            }
+//             if (rbuffer) {
+//                 *rbuffer++ = data;
+//             }
 
-            read_count++;
-        }
-    }
+//             read_count++;
+//         }
+//     }
 
-    while(!(REGS_SPI0->cs & CS_DONE)) {
-        while(REGS_SPI0->cs & CS_RXD) {
-            unsigned int r = REGS_SPI0->fifo;
-	    // debughex(r);
-        }
-    }
+//     while(!(REGS_SPI0->cs & CS_DONE)) {
+//         while(REGS_SPI0->cs & CS_RXD) {
+//             unsigned int r = REGS_SPI0->fifo;
+// 	    // debughex(r);
+//         }
+//     }
 
-    REGS_SPI0->cs = (REGS_SPI0->cs & ~CS_TA);
-}
+//     REGS_SPI0->cs = (REGS_SPI0->cs & ~CS_TA);
+// }
 
 void spi_send(u8 chip_select, u8 *data, u32 size) {
     spi_send_recv(chip_select, data, 0, size);
 }
 
-void spi_send_(u8 *data, u32 size) {
-    spi_send_recv_(data, 0, size);
-}
+// void spi_send_(u8 *data, u32 size) {
+//     spi_send_recv_(data, 0, size);
+// }
 
 void spi_recv(u8 chip_select, u8 *data, u32 size) {
     spi_send_recv(chip_select, 0, data, size);
