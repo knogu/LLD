@@ -9,6 +9,21 @@
 #include "enc28j60.h"
 #include "ip_arp_udp_tcp.h"
 
+int strncmp(const char *s1, const char *s2, unsigned short n)
+{
+    unsigned char u1, u2;
+
+    while (n-- > 0)
+    {
+       u1 = (unsigned char) *s1++;
+       u2 = (unsigned char) *s2++;
+       if (u1 != u2) return u1 - u2;
+       if (u1 == '\0') return 0;
+    }
+
+    return 0;
+}
+
 // NETWORKING GLOBALS AND FUNCTIONS
 
 ENC_HandleTypeDef handle;
@@ -66,6 +81,40 @@ void putc(void *p, char c) {
 }
 
 u32 get_el();
+
+void serve(void)
+{
+   while (1) {
+      while (!ENC_GetReceivedFrame(&handle));
+
+      uint8_t *buf = (uint8_t *)handle.RxFrameInfos.buffer;
+      uint16_t len = handle.RxFrameInfos.length;
+      uint16_t dat_p = packetloop_arp_icmp_tcp(buf, len);
+
+      if (dat_p != 0) {
+         printf("Incoming web request... ");
+
+         if (strncmp("GET ", (char *)&(buf[dat_p]), 4) != 0) {
+            printf("not GET");
+            dat_p = fill_tcp_data(buf, 0, "HTTP/1.0 401 Unauthorized\r\nContent-Type: text/html\r\n\r\n<h1>ERROR</h1>");
+         } else if (strncmp("echo ", (char *)&(buf[dat_p]), 5) != 0) {
+            dat_p = fill_tcp_data(buf, 0, (char *)&buf[dat_p + 5]);
+         } else {
+            if (strncmp("/ ", (char *)&(buf[dat_p+4]), 2) == 0) {
+               // just one web page in the "root directory" of the web server
+               printf("GET root");
+               dat_p = fill_tcp_data(buf, 0, "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>Hello world!</h1>");
+            } else {
+               // just one web page not in the "root directory" of the web server
+               printf("GET not root");
+               dat_p = fill_tcp_data(buf, 0, "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>Goodbye cruel world.</h1>");
+            }
+         }
+
+         www_server_reply(buf, dat_p); // send web page data
+      }
+   }
+}
 
 
 void kernel_main() {
