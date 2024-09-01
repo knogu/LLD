@@ -48,6 +48,25 @@ u64 timer_get_ticks() {
     return ((u64)hi << 32) | lo;
 }
 
+unsigned long HAL_GetTick(void) {
+    unsigned int hi = REGS_TIMER->counter_hi;
+    unsigned int lo = REGS_TIMER->counter_lo;
+
+    //double check hi value didn't change after setting it...
+    if (hi != REGS_TIMER->counter_hi) {
+        hi = REGS_TIMER->counter_hi;
+        lo = REGS_TIMER->counter_lo;
+    }
+
+    return ((unsigned long)hi << 32) | lo;
+}
+
+void HAL_Delay(unsigned int ms) {
+    unsigned long start = HAL_GetTick();
+
+    while(HAL_GetTick() < start + (ms * 1000));
+}
+
 //sleep in milliseconds.
 void timer_sleep(u32 ms) {
     u64 start = timer_get_ticks();

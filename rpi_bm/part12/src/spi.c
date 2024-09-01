@@ -56,7 +56,7 @@ void spi_send_recv(u8 chip_select, u8 *sbuffer, u8 *rbuffer, u32 size) {
     REGS_SPI0->cs = (REGS_SPI0->cs & ~CS_TA);
 }
 
-void _spi_send_recv(unsigned char *sbuffer, unsigned char *rbuffer, unsigned int size) {
+void spi_send_recv_(unsigned char *sbuffer, unsigned char *rbuffer, unsigned int size) {
     REGS_SPI0->data_length = size;
     REGS_SPI0->cs = REGS_SPI0->cs | CS_CLEAR_RX | CS_CLEAR_TX | CS_TA;
     
@@ -88,7 +88,7 @@ void _spi_send_recv(unsigned char *sbuffer, unsigned char *rbuffer, unsigned int
     while(!(REGS_SPI0->cs & CS_DONE)) {
         while(REGS_SPI0->cs & CS_RXD) {
             unsigned int r = REGS_SPI0->fifo;
-	    debughex(r);
+	    // debughex(r);
         }
     }
 
@@ -99,8 +99,8 @@ void spi_send(u8 chip_select, u8 *data, u32 size) {
     spi_send_recv(chip_select, data, 0, size);
 }
 
-void _spi_send(u8 chip_select, u8 *data, u32 size) {
-    spi_send_recv(chip_select, data, 0, size);
+void spi_send_(u8 *data, u32 size) {
+    spi_send_recv_(data, 0, size);
 }
 
 void spi_recv(u8 chip_select, u8 *data, u32 size) {
