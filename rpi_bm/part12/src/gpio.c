@@ -59,6 +59,12 @@ enum {
     GPIO_FUNCTION_ALT0 = 4
 };
 
+enum {
+    Pull_None = 0,
+    Pull_Down = 2,
+    Pull_Up = 1
+};
+
 unsigned int gpio_set     (unsigned int pin_number, unsigned int value) { return gpio_call(pin_number, value, GPSET0, 1, GPIO_MAX_PIN); }
 unsigned int gpio_clear   (unsigned int pin_number, unsigned int value) { return gpio_call(pin_number, value, GPCLR0, 1, GPIO_MAX_PIN); }
 
@@ -69,3 +75,5 @@ void gpio_setPinOutputBool(u8 pin_number, unsigned int onOrOff) {
         gpio_clear(pin_number, 1);
     }
 }
+
+unsigned int gpio_pull    (unsigned int pin_number, unsigned int value) { return gpio_call(pin_number, value, GPPUPPDN0, 2, GPIO_MAX_PIN); }

@@ -18,3 +18,5 @@ void gpio_pin_set_func(u8 pinNumber, GpioFunc func);
 void gpio_pin_enable(u8 pinNumber);
 
 void gpio_setPinOutputBool(u8 pin_number, unsigned int onOrOff);
+
+unsigned int gpio_pull    (unsigned int pin_number, unsigned int value);

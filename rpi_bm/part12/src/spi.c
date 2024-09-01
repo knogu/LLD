@@ -3,14 +3,16 @@
 #include "gpio.h"
 #include "printf.h"
 
+
 void spi_init() {
     gpio_pin_set_func(7, GFAlt0); //CS1
-    gpio_pin_set_func(8, GFAlt0); //CS0  -> CS  (red)
+    gpio_pin_set_func(8, 1); //CS0  -> CS  (red)
     gpio_pin_set_func(9, GFAlt0); //MISO 
     gpio_pin_set_func(10, GFAlt0);//MOSI -> DIN (brown)
     gpio_pin_set_func(11, GFAlt0);//SCLK -> CLK (orange)
     gpio_pin_enable(7);
-    gpio_pin_enable(8);
+    // gpio_pin_enable(8);
+    gpio_pull(8, 0);
     gpio_pin_enable(9);
     gpio_pin_enable(10);
     gpio_pin_enable(11);
